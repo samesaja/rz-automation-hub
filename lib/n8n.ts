@@ -15,9 +15,11 @@ export interface WorkflowResponse {
 
 export class N8nClient {
   private baseUrl: string
+  private apiKey: string
 
-  constructor(baseUrl: string = N8N_URL) {
+  constructor(baseUrl: string = N8N_URL, apiKey: string = process.env.N8N_API_KEY || '') {
     this.baseUrl = baseUrl
+    this.apiKey = apiKey
   }
 
   /**
@@ -29,10 +31,11 @@ export class N8nClient {
   ): Promise<WorkflowResponse> {
     try {
       const webhookUrl = `${this.baseUrl}/webhook/${workflowId}`
-      
+
       const response = await axios.post(webhookUrl, payload, {
         headers: {
           'Content-Type': 'application/json',
+          'X-N8N-API-KEY': this.apiKey,
         },
         timeout: 30000, // 30 seconds timeout
       })
@@ -59,6 +62,9 @@ export class N8nClient {
       const response = await axios.get(
         `${this.baseUrl}/api/v1/executions/${executionId}`,
         {
+          headers: {
+            'X-N8N-API-KEY': this.apiKey,
+          },
           timeout: 10000,
         }
       )
@@ -78,12 +84,36 @@ export class N8nClient {
         `${this.baseUrl}/api/v1/executions`,
         {
           params: { limit },
+          headers: {
+            'X-N8N-API-KEY': this.apiKey,
+          },
           timeout: 10000,
         }
       )
       return response.data.data || []
     } catch (error: any) {
       console.error('Failed to list executions:', error.message)
+      return []
+    }
+  }
+
+  /**
+   * List workflows
+   */
+  async listWorkflows(): Promise<any[]> {
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/api/v1/workflows`,
+        {
+          headers: {
+            'X-N8N-API-KEY': this.apiKey,
+          },
+          timeout: 10000,
+        }
+      )
+      return response.data.data || []
+    } catch (error: any) {
+      console.error('Failed to list workflows:', error.message)
       return []
     }
   }
