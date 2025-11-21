@@ -18,7 +18,7 @@ export class N8nClient {
   private apiKey: string
 
   constructor(baseUrl: string = N8N_URL, apiKey: string = process.env.N8N_API_KEY || '') {
-    this.baseUrl = baseUrl
+    this.baseUrl = baseUrl.replace(/\/$/, '')
     this.apiKey = apiKey
   }
 
@@ -115,6 +115,88 @@ export class N8nClient {
     } catch (error: any) {
       console.error('Failed to list workflows:', error.message)
       return []
+    }
+  }
+
+  /**
+   * Create a new workflow
+   */
+  async createWorkflow(name: string): Promise<WorkflowResponse> {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/api/v1/workflows`,
+        {
+          name,
+          nodes: [],
+          connections: {},
+          settings: {}
+        },
+        {
+          headers: {
+            'X-N8N-API-KEY': this.apiKey,
+          },
+          timeout: 10000,
+        }
+      )
+      return {
+        success: true,
+        data: response.data,
+      }
+    } catch (error: any) {
+      console.error('Failed to create workflow:', error.message)
+      return {
+        success: false,
+        error: error.message || 'Failed to create workflow',
+      }
+    }
+  }
+
+  /**
+   * Update a workflow
+   */
+  async updateWorkflow(id: string, data: { name?: string; active?: boolean }): Promise<WorkflowResponse> {
+    try {
+      // First fetch the existing workflow to get nodes and connections
+      const existing = await axios.get(
+        `${this.baseUrl}/api/v1/workflows/${id}`,
+        {
+          headers: {
+            'X-N8N-API-KEY': this.apiKey,
+          },
+          timeout: 10000,
+        }
+      )
+
+      const currentWorkflow = existing.data
+
+      // Merge updates
+      const updatedWorkflow = {
+        ...currentWorkflow,
+        name: data.name ?? currentWorkflow.name,
+        active: data.active ?? currentWorkflow.active,
+      }
+
+      // n8n PUT requires the full object
+      const response = await axios.put(
+        `${this.baseUrl}/api/v1/workflows/${id}`,
+        updatedWorkflow,
+        {
+          headers: {
+            'X-N8N-API-KEY': this.apiKey,
+          },
+          timeout: 10000,
+        }
+      )
+      return {
+        success: true,
+        data: response.data,
+      }
+    } catch (error: any) {
+      console.error('Failed to update workflow:', error.message)
+      return {
+        success: false,
+        error: error.message || 'Failed to update workflow',
+      }
     }
   }
 }
