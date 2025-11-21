@@ -1,0 +1,157 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "RZ Automation Hub API",
+        "version": "1.0.0",
+        "description": "API documentation for RZ Automation Hub"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Local Development Server"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "cookieAuth": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "pb_auth"
+            }
+        }
+    },
+    "security": [
+        {
+            "cookieAuth": []
+        }
+    ],
+    "paths": {
+        "/api/users": {
+            "get": {
+                "summary": "List all users",
+                "tags": [
+                    "Users"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "role": {
+                                                "type": "string"
+                                            },
+                                            "created": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new user",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "passwordConfirm"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "passwordConfirm": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User created"
+                    }
+                }
+            }
+        },
+        "/api/workflows": {
+            "get": {
+                "summary": "List n8n workflows",
+                "tags": [
+                    "Workflows"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of workflows",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "active": {
+                                                "type": "boolean"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logs": {
+            "get": {
+                "summary": "Get system logs",
+                "tags": [
+                    "System"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "System logs"
+                    }
+                }
+            }
+        }
+    }
+}

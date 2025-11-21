@@ -23,6 +23,8 @@
     "pocketbase": "^0.26.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "swagger-ui-dist": "^5.30.2",
+    "swagger-ui-react": "^5.30.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "zustand": "^4.5.2"
@@ -31,6 +33,7 @@
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
+    "@types/swagger-ui-react": "^5.18.0",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
