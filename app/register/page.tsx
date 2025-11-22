@@ -26,24 +26,23 @@ export default function RegisterPage() {
         }
 
         try {
-            // 1. Create user
-            await pb.collection('users').create({
-                email,
-                password,
-                passwordConfirm,
-                emailVisibility: true,
-                role: 'admin' // Default role as requested
+            // Call server-side API to avoid Mixed Content issues (HTTPS -> HTTP)
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, passwordConfirm })
             })
 
-            // 2. Auto login
-            await pb.collection('users').authWithPassword(email, password)
+            const data = await response.json()
 
-            // 3. Set cookie
-            document.cookie = pb.authStore.exportToCookie({ httpOnly: false })
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to register')
+            }
 
+            // Cookie is set by the server response
             router.push('/dashboard')
         } catch (e: any) {
-            console.error(e)
+            console.error('Registration error:', e)
             setError(e.message || 'Failed to register')
         } finally {
             setIsLoading(false)
