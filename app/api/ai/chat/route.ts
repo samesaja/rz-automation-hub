@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { logActivity } from '@/lib/logger'
 
 export async function POST(req: Request) {
+    const start = Date.now()
     try {
         const { message, apiKey, history, model } = await req.json()
 
@@ -41,6 +43,10 @@ export async function POST(req: Request) {
         const result = await chat.sendMessage(message)
         const response = await result.response
         const text = response.text()
+
+        // Log successful AI request
+        const duration = Date.now() - start
+        await logActivity('AI Studio', 'success', `Generated response for model ${modelId}`, duration)
 
         return NextResponse.json({ response: text })
 

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Cpu, Activity, TrendingUp, Database, Users, ArrowRight, Zap, Shield, Clock } from 'lucide-react'
 import { cookies } from 'next/headers'
 import PocketBase from 'pocketbase'
+import DashboardStats from '@/components/dashboard-stats'
 
 async function getUser() {
   const cookieStore = cookies()
@@ -41,52 +42,7 @@ export default async function DashboardPage() {
           </div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-200/50 border-b border-gray-200/50">
-            <div className="p-8 md:p-10 hover:bg-white/30 transition-colors group">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="p-2.5 rounded-xl bg-orange-100 text-orange-600 group-hover:scale-110 transition-transform">
-                  <Activity className="w-5 h-5" />
-                </div>
-                <span className="text-sm font-medium text-gray-500">API Calls</span>
-              </div>
-              <p className="text-3xl font-bold text-gray-900">1,248</p>
-              <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" /> +12.5%
-              </p>
-            </div>
-            <div className="p-8 md:p-10 hover:bg-white/30 transition-colors group">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="p-2.5 rounded-xl bg-amber-100 text-amber-600 group-hover:scale-110 transition-transform">
-                  <Cpu className="w-5 h-5" />
-                </div>
-                <span className="text-sm font-medium text-gray-500">Active Workflows</span>
-              </div>
-              <p className="text-3xl font-bold text-gray-900">12</p>
-              <p className="text-xs text-gray-400 font-medium mt-1">3 running now</p>
-            </div>
-            <div className="p-8 md:p-10 hover:bg-white/30 transition-colors group">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="p-2.5 rounded-xl bg-rose-100 text-rose-600 group-hover:scale-110 transition-transform">
-                  <Zap className="w-5 h-5" />
-                </div>
-                <span className="text-sm font-medium text-gray-500">AI Requests</span>
-              </div>
-              <p className="text-3xl font-bold text-gray-900">847</p>
-              <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" /> +28.3%
-              </p>
-            </div>
-            <div className="p-8 md:p-10 hover:bg-white/30 transition-colors group">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="p-2.5 rounded-xl bg-teal-100 text-teal-600 group-hover:scale-110 transition-transform">
-                  <Shield className="w-5 h-5" />
-                </div>
-                <span className="text-sm font-medium text-gray-500">Success Rate</span>
-              </div>
-              <p className="text-3xl font-bold text-gray-900">98.7%</p>
-              <p className="text-xs text-gray-400 font-medium mt-1">Excellent</p>
-            </div>
-          </div>
+          <DashboardStats />
 
           {/* Main Content Grid */}
           <div className="grid md:grid-cols-3 min-h-[500px]">
