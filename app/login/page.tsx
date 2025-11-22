@@ -19,15 +19,24 @@ export default function LoginPage() {
         setError('')
 
         try {
-            await pb.collection('users').authWithPassword(email, password)
+            // Call server-side API to avoid Mixed Content issues
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
 
-            // Set cookie for middleware (optional, but good for server-side checks if needed later)
-            // For now, we rely on client-side redirect and PB's auto-cookie handling
-            document.cookie = pb.authStore.exportToCookie({ httpOnly: false })
+            const data = await response.json()
 
+            if (!response.ok) {
+                throw new Error(data.error || 'Invalid email or password')
+            }
+
+            // Cookie is set by the server response
             router.push('/dashboard')
-        } catch (e) {
-            setError('Invalid email or password')
+        } catch (e: any) {
+            console.error('Login error:', e)
+            setError(e.message || 'Invalid email or password')
         } finally {
             setIsLoading(false)
         }
