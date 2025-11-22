@@ -1,82 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateId } from '@/lib/utils'
-
-// Mock logs data - in production, this would come from a database
-const mockLogs = [
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 5 * 60000).toISOString(),
-    workflow: 'Data Sync Workflow',
-    status: 'success',
-    duration: 1243,
-    message: 'Successfully synchronized 1,248 records from source database to destination',
-  },
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 15 * 60000).toISOString(),
-    workflow: 'Email Automation',
-    status: 'success',
-    duration: 892,
-    message: 'Sent 45 automated emails to customers. All deliveries confirmed.',
-  },
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 25 * 60000).toISOString(),
-    workflow: 'Report Generation',
-    status: 'running',
-    duration: 0,
-    message: 'Generating daily analytics report. Processing 3,421 data points...',
-  },
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
-    workflow: 'Data Sync Workflow',
-    status: 'failed',
-    duration: 5234,
-    message: 'Connection timeout: Unable to connect to source database after 30 seconds',
-  },
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 65 * 60000).toISOString(),
-    workflow: 'API Integration',
-    status: 'success',
-    duration: 456,
-    message: 'Successfully fetched and processed data from external API endpoint',
-  },
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 125 * 60000).toISOString(),
-    workflow: 'Email Automation',
-    status: 'success',
-    duration: 1102,
-    message: 'Campaign completed. 98.7% delivery rate, 24.3% open rate.',
-  },
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 185 * 60000).toISOString(),
-    workflow: 'Report Generation',
-    status: 'success',
-    duration: 2843,
-    message: 'Monthly report generated and saved to cloud storage',
-  },
-  {
-    id: generateId(),
-    timestamp: new Date(Date.now() - 245 * 60000).toISOString(),
-    workflow: 'Data Sync Workflow',
-    status: 'success',
-    duration: 1567,
-    message: 'Incremental sync completed. 342 records updated, 15 new records added',
-  },
-]
+import { n8nClient } from '@/lib/n8n'
+import PocketBase from 'pocketbase'
 
 export async function GET(request: NextRequest) {
   try {
-    // In production, fetch from database with filters, pagination, etc.
+    // 1. Fetch n8n executions
+    const executionsPromise = n8nClient.listExecutions(50)
+
+    // 2. Fetch App API logs from PocketBase
+    const pb = new PocketBase('http://34.50.111.177:8090')
+    const pbLogsPromise = pb.collection('logs').getList(1, 50, {
+      sort: '-created',
+    })
+
+    const [executions, pbLogsResult] = await Promise.all([
+      executionsPromise,
+      pbLogsPromise.catch(() => ({ items: [] })) // Handle PB failure gracefully
+    ])
+
+    // Map n8n logs
+    const n8nLogs = executions.map((exec: any) => {
+      const startTime = new Date(exec.startedAt).getTime()
+      const endTime = exec.stoppedAt ? new Date(exec.stoppedAt).getTime() : Date.now()
+      const duration = endTime - startTime
+
+      let status = 'running'
+      if (exec.finished) {
+        status = exec.data?.resultData?.error ? 'failed' : 'success'
+      }
+
+      return {
+        id: exec.id,
+        timestamp: exec.startedAt,
+        workflow: exec.workflowName || 'Unknown Workflow',
+        status,
+        duration,
+        message: exec.data?.resultData?.error?.message || `Execution ${status} in ${duration}ms`,
+        source: 'n8n'
+      }
+    })
+
+    // Map App logs
+    const appLogs = pbLogsResult.items.map((log: any) => ({
+      id: log.id,
+      timestamp: log.created,
+      workflow: log.workflow, // This field stores the API Endpoint name
+      status: log.status,
+      duration: log.duration,
+      message: log.message,
+      source: 'api'
+    }))
+
+    // Merge and Sort
+    const allLogs = [...n8nLogs, ...appLogs].sort((a, b) =>
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    )
+
     return NextResponse.json({
-      logs: mockLogs,
-      total: mockLogs.length,
+      logs: allLogs.slice(0, 50), // Return top 50 combined
+      total: allLogs.length,
     })
   } catch (error: any) {
+    console.error('Failed to fetch logs:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch logs' },
       { status: 500 }

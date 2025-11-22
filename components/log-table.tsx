@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ChevronRight, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { ChevronRight, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react'
 
 interface Log {
   id: string
@@ -16,13 +16,26 @@ export default function LogTable() {
   const [logs, setLogs] = useState<Log[]>([])
   const [selectedLog, setSelectedLog] = useState<Log | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     fetchLogs()
+
+    // Poll every 5 seconds
+    intervalRef.current = setInterval(() => {
+      fetchLogs(true)
+    }, 5000)
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
   }, [])
 
-  const fetchLogs = async () => {
-    setLoading(true)
+  const fetchLogs = async (isPolling = false) => {
+    if (!isPolling) setLoading(true)
+    else setRefreshing(true)
+
     try {
       const res = await fetch('/api/logs')
       const data = await res.json()
@@ -31,6 +44,7 @@ export default function LogTable() {
       console.error('Failed to fetch logs:', error)
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }
 
@@ -58,6 +72,18 @@ export default function LogTable() {
 
   return (
     <div className="space-y-6">
+      {/* Header Actions */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => fetchLogs()}
+          className="btn-macos flex items-center gap-2"
+          disabled={loading || refreshing}
+        >
+          <RefreshCw className={`w-4 h-4 ${loading || refreshing ? 'animate-spin' : ''}`} />
+          {refreshing ? 'Refreshing...' : 'Refresh Logs'}
+        </button>
+      </div>
+
       {/* Table */}
       <div className="macos-card overflow-hidden">
         <div className="overflow-x-auto">
