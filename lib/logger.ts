@@ -1,4 +1,4 @@
-import { pb } from './pocketbase'
+import { getAdminPb } from './pocketbase-admin'
 
 export async function logActivity(
     workflow: string,
@@ -7,11 +7,9 @@ export async function logActivity(
     duration: number
 ) {
     try {
-        // Ensure auth is loaded if needed, though for public create it might not be.
-        // Ideally, use a server-side admin client or ensure rules allow creation.
-        // For now, we rely on the pb instance from lib/pocketbase.ts which is initialized.
+        const pb = await getAdminPb()
 
-        await pb.collection('logs').create({
+        await pb.collection('app_logs').create({
             workflow,
             status,
             message,
