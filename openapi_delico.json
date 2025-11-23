@@ -1,0 +1,480 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Kasir Delico API",
+        "version": "1.0.0",
+        "description": "API Documentation for Kasir Delico (Converted from Postman)"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Local Server"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "ucup@delico.local"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "Ucup2025!@#"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login"
+                    }
+                }
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get Me",
+                "responses": {
+                    "200": {
+                        "description": "User profile retrieved"
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get All Products",
+                "responses": {
+                    "200": {
+                        "description": "List of products"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Create Product",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "New Coffee"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "example": 25000
+                                    },
+                                    "costPrice": {
+                                        "type": "number",
+                                        "example": 15000
+                                    },
+                                    "stock": {
+                                        "type": "number",
+                                        "example": 100
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "Coffee"
+                                    },
+                                    "recipe": {
+                                        "type": "array",
+                                        "items": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Update Product",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "example": "PRODUCT_ID_HERE"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Updated Coffee"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "example": 28000
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product updated"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Delete Product",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product deleted"
+                    }
+                }
+            }
+        },
+        "/api/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get All Orders",
+                "responses": {
+                    "200": {
+                        "description": "List of orders"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Create Order",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "qty": {
+                                                    "type": "number"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "total": {
+                                        "type": "number",
+                                        "example": 25000
+                                    },
+                                    "paymentMethod": {
+                                        "type": "string",
+                                        "example": "cash"
+                                    },
+                                    "paidAmount": {
+                                        "type": "number",
+                                        "example": 30000
+                                    },
+                                    "changeAmount": {
+                                        "type": "number",
+                                        "example": 5000
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Order created"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Confirm Payment (QRIS)",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "example": "ORDER_ID_HERE"
+                                    },
+                                    "confirmPayment": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment confirmed"
+                    }
+                }
+            }
+        },
+        "/api/stock": {
+            "get": {
+                "tags": [
+                    "Stock"
+                ],
+                "summary": "Get All Stock",
+                "parameters": [
+                    {
+                        "name": "lowStock",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of stock items"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Stock"
+                ],
+                "summary": "Create Stock Item",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Milk"
+                                    },
+                                    "quantity": {
+                                        "type": "number",
+                                        "example": 10
+                                    },
+                                    "unit": {
+                                        "type": "string",
+                                        "example": "liter"
+                                    },
+                                    "minStock": {
+                                        "type": "number",
+                                        "example": 2
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "Dairy"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Stock item created"
+                    }
+                }
+            }
+        },
+        "/api/stock/adjust": {
+            "post": {
+                "tags": [
+                    "Stock"
+                ],
+                "summary": "Adjust Stock",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "stockId": {
+                                        "type": "string",
+                                        "example": "STOCK_ID_HERE"
+                                    },
+                                    "quantity": {
+                                        "type": "number",
+                                        "example": 5
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "IN",
+                                            "OUT"
+                                        ],
+                                        "example": "IN"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Restock"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Stock adjusted"
+                    }
+                }
+            }
+        },
+        "/api/expenses": {
+            "get": {
+                "tags": [
+                    "Expenses"
+                ],
+                "summary": "Get All Expenses",
+                "responses": {
+                    "200": {
+                        "description": "List of expenses"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Expenses"
+                ],
+                "summary": "Create Expense",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "category": {
+                                        "type": "string",
+                                        "example": "Bahan Baku"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Beli Susu"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "example": 50000
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Expense created"
+                    }
+                }
+            }
+        },
+        "/api/settings": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get Settings",
+                "responses": {
+                    "200": {
+                        "description": "Settings retrieved"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Update Settings",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "monthlyBudget": {
+                                        "type": "number",
+                                        "example": 6000000
+                                    },
+                                    "businessName": {
+                                        "type": "string",
+                                        "example": "Kasir Delico Updated"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Settings updated"
+                    }
+                }
+            }
+        }
+    }
+}

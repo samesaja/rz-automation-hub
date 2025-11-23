@@ -30,6 +30,21 @@ export default function ApiPlaygroundPage() {
     reader.onload = (event) => {
       try {
         const json = JSON.parse(event.target?.result as string)
+
+        // Basic validation for OpenAPI/Swagger
+        const isSwagger = json.swagger || json.openapi
+        const isPostman = json.info?._postman_id || json.info?.schema?.includes('postman')
+
+        if (isPostman) {
+          alert('Postman collections are not currently supported. Please upload an OpenAPI (Swagger) specification file.')
+          return
+        }
+
+        if (!isSwagger) {
+          alert('Invalid API specification. File must contain "swagger": "2.0" or "openapi": "3.x.x" field.')
+          return
+        }
+
         setSpec(json)
         setUrl('') // Clear URL to indicate we are using spec
         setInputValue(file.name) // Show filename in input
