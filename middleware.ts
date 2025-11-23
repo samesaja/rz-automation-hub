@@ -6,6 +6,8 @@ export function middleware(request: NextRequest) {
     const authCookie = request.cookies.get('pb_auth')
     const isLoggedIn = !!authCookie?.value
 
+    console.log(`[Middleware] Path: ${request.nextUrl.pathname}, Cookie: ${isLoggedIn ? 'Present' : 'Missing'}`)
+
     const isLoginPage = request.nextUrl.pathname === '/login'
     const isDashboardPage = request.nextUrl.pathname.startsWith('/dashboard')
     const isUsersPage = request.nextUrl.pathname.startsWith('/dashboard/users')

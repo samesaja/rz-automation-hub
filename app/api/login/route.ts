@@ -20,7 +20,8 @@ export async function POST(req: Request) {
         // Parse and set cookie
         const cookieParts = cookie.split(';')
         const authCookiePart = cookieParts[0] // pb_auth=...
-        const [name, value] = authCookiePart.split('=')
+        const name = 'pb_auth'
+        const value = authCookiePart.substring(name.length + 1)
 
         cookieStore.set(name, value, {
             path: '/',
