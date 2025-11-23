@@ -10,7 +10,12 @@ export function middleware(request: NextRequest) {
     const isDashboardPage = request.nextUrl.pathname.startsWith('/dashboard')
     const isUsersPage = request.nextUrl.pathname.startsWith('/dashboard/users')
 
-    // Redirect unauthenticated users to login page
+    // Protected routes:
+    // - /dashboard/api-playground
+    // - /dashboard/workflows
+    // - /dashboard/logs
+    // - /dashboard/showcase
+    // - /dashboard/users (Admin only)
     if (isDashboardPage && !isLoggedIn) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
@@ -40,5 +45,9 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/dashboard/:path*', '/login'],
+    matcher: [
+        '/dashboard',
+        '/dashboard/:path*',
+        '/login'
+    ],
 }
