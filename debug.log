@@ -1,0 +1,140 @@
+Authenticated as admin using pb.admins service
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+Authenticated as admin using pb.admins service
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+Authenticated as admin using pb.admins service
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+Authenticated as admin using pb.admins service
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+Authenticated as admin using pb.admins service
+Auth store is invalid (likely clock skew), forcing Authorization header with Bearer prefix
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+Authenticated as admin using pb.admins service
+Auth store is invalid (likely clock skew), forcing Authorization header with Bearer prefix
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: The request requires valid record authorization token.
+API Route - Error Status: 401
+API Route - Error Response: {
+  "data": {},
+  "message": "The request requires valid record authorization token.",
+  "status": 401
+}
+pb.admins auth failed or not available, falling back to _superusers collection: Error: Skipping pb.admins to test _superusers
+Auth store is invalid (likely clock skew), forcing Authorization header with Bearer prefix
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: The request requires valid record authorization token.
+API Route - Error Status: 401
+API Route - Error Response: {
+  "data": {},
+  "message": "The request requires valid record authorization token.",
+  "status": 401
+}
+pb.admins auth failed or not available, falling back to _superusers collection: Error: Skipping pb.admins to test _superusers
+Auth store is invalid (likely clock skew), forcing Authorization header WITHOUT Bearer prefix
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: The request requires valid record authorization token.
+API Route - Error Status: 401
+API Route - Error Response: {
+  "data": {},
+  "message": "The request requires valid record authorization token.",
+  "status": 401
+}
+pb.admins auth failed or not available, falling back to _superusers collection: Error: Skipping pb.admins to test _superusers
+Auth store is invalid (likely clock skew), forcing Authorization header WITHOUT Bearer prefix
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Raw Fetch URL: http://34.50.111.177:8090/api/collections?sort=name
+API Route - Raw Fetch Token: eyJhbGciOi...
+API Route - Raw Fetch Status: 401
+API Route - Raw Fetch Error Body: {"data":{},"message":"The request requires valid record authorization token.","status":401}
+
+API Route - Error: {"data":{},"message":"The request requires valid record authorization token.","status":401}
+
+API Route - Error Status: undefined
+pb.admins auth failed or not available, falling back to _superusers collection: Error: Skipping pb.admins to test _superusers
+Auth store is invalid (likely clock skew), forcing Authorization header WITHOUT Bearer prefix
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Raw Fetch URL: http://34.50.111.177:8090/api/collections?sort=name
+API Route - Raw Fetch Token: eyJhbGciOi...
+API Route - Raw Fetch Status: 401
+API Route - Raw Fetch Error Body: {"data":{},"message":"The request requires valid record authorization token.","status":401}
+
+API Route - Error: {"data":{},"message":"The request requires valid record authorization token.","status":401}
+
+API Route - Error Status: undefined
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: The request requires valid record authorization token.
+API Route - Error Status: 401
+API Route - Error Response: {
+  "data": {},
+  "message": "The request requires valid record authorization token.",
+  "status": 401
+}
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: The request requires valid record authorization token.
+API Route - Error Status: 401
+API Route - Error Response: {
+  "data": {},
+  "message": "The request requires valid record authorization token.",
+  "status": 401
+}
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: The request requires valid record authorization token.
+API Route - Error Status: 401
+API Route - Error Response: {
+  "data": {},
+  "message": "The request requires valid record authorization token.",
+  "status": 401
+}
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: Failed to fetch collections: 401 {"data":{},"message":"The request requires valid record authorization token.","status":401}
+
+API Route - Error Status: undefined
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Auth Store Valid: false
+API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+API Route - Token: eyJhbGciOi...
+API Route - Error: Failed to fetch collections: 401 {"data":{},"message":"The request requires valid record authorization token.","status":401}
+
+API Route - Error Status: undefined
+[2025-11-24T07:07:59.156Z] API Route - Auth Store Valid: false
+[2025-11-24T07:07:59.157Z] API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+[2025-11-24T07:07:59.157Z] API Route - Dynamic Token to use: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc2MzkwNzcxMCwiaWQiOiI5eWsxbHRrbzg5bW5qcXQiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.lRSQ1xtQ0VtdxfwxcnxYVMQ6NwhbOYNNdFoTh4Iv2iI"
+API Route - Error: Failed to fetch collections: 401 {"data":{},"message":"The request requires valid record authorization token.","status":401}
+
+API Route - Error Status: undefined
+[2025-11-24T07:08:39.504Z] API Route - Auth Store Valid: true
+[2025-11-24T07:08:39.504Z] API Route - Auth Model: 9yk1ltko89mnjqt samdhitosaja@protonmail.com
+[2025-11-24T07:08:39.505Z] API Route - Dynamic Token to use: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc2NDA1NDUxOSwiaWQiOiI5eWsxbHRrbzg5bW5qcXQiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.rUIAzFsqVu9oVfHlhAueYt-R-d5W0Rqd9ZP5mIl14GQ"

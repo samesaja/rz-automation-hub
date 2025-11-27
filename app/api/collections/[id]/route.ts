@@ -1,40 +1,43 @@
 import { NextResponse } from 'next/server'
 import { getAdminPb } from '@/lib/pocketbase-admin'
-import { logActivity } from '@/lib/logger'
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-    const start = Date.now()
+export async function PUT(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
     try {
-        const pb = await getAdminPb()
-        const data = await req.json()
+        const body = await request.json()
         const { id } = params
 
-        const collection = await pb.collections.update(id, data)
+        // Validate that we have an ID
+        if (!id) {
+            return NextResponse.json(
+                { error: 'Collection ID is required' },
+                { status: 400 }
+            )
+        }
 
-        await logActivity('API: Update Collection', 'success', `Updated collection ${collection.name}`, Date.now() - start)
-        return NextResponse.json(collection)
-    } catch (e: any) {
-        const error = e as Error
-        console.error('Update collection error:', e)
-        await logActivity('API: Update Collection', 'failed', error.message, Date.now() - start)
-        return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-}
-
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
-    const start = Date.now()
-    try {
         const pb = await getAdminPb()
-        const { id } = params
 
-        await pb.collections.delete(id)
+        // Update the collection
+        // We only allow updating specific rule fields for safety
+        const allowedFields = ['listRule', 'viewRule', 'createRule', 'updateRule', 'deleteRule']
+        const updateData: Record<string, any> = {}
 
-        await logActivity('API: Delete Collection', 'success', `Deleted collection ${id}`, Date.now() - start)
-        return NextResponse.json({ success: true })
-    } catch (e: any) {
-        const error = e as Error
-        console.error('Delete collection error:', e)
-        await logActivity('API: Delete Collection', 'failed', error.message, Date.now() - start)
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        for (const field of allowedFields) {
+            if (body[field] !== undefined) {
+                updateData[field] = body[field]
+            }
+        }
+
+        const result = await pb.collections.update(id, updateData)
+
+        return NextResponse.json(result)
+    } catch (error: any) {
+        console.error('Failed to update collection:', error)
+        return NextResponse.json(
+            { error: error.message || 'Failed to update collection' },
+            { status: 500 }
+        )
     }
 }
