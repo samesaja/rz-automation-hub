@@ -8,7 +8,7 @@ export async function POST(req: Request) {
         const { message, apiKey, history, model } = await req.json()
 
         // Use user provided key or fallback to server env
-        const key = apiKey || process.env.GOOGLE_API_KEY
+        const key = apiKey || process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY
 
         if (!key) {
             return NextResponse.json(
@@ -19,10 +19,8 @@ export async function POST(req: Request) {
 
         const genAI = new GoogleGenerativeAI(key)
 
-        // Use provided model or default to gemini-1.5-flash
-        // Note: 'gemini-1.5-flash' might need to be 'gemini-1.5-flash-latest' or similar depending on API version.
-        // But with custom models, the user can provide the exact string.
-        const modelId = model || 'gemini-1.5-flash'
+        // Use provided model or default to gemini-2.5-flash
+        const modelId = model || 'gemini-2.5-flash'
 
         const genModel = genAI.getGenerativeModel({ model: modelId })
 

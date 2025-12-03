@@ -3,24 +3,31 @@
 import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { Box, Type, MousePointer2, Layout, Image as ImageIcon } from "lucide-react";
+import { AIGenerator } from "./AIGenerator";
 
 export function Sidebar() {
     return (
-        <div className="w-full h-full p-4 flex flex-col gap-4">
-            <h2 className="font-semibold text-lg">Components</h2>
-            <div className="grid grid-cols-2 gap-2">
-                <DraggableSidebarItem type="container" icon={<Layout size={20} />} label="Container" />
-                <DraggableSidebarItem type="button" icon={<MousePointer2 size={20} />} label="Button" />
-                <DraggableSidebarItem type="text" icon={<Type size={20} />} label="Text" />
-                <DraggableSidebarItem type="input" icon={<Box size={20} />} label="Input" />
-                <DraggableSidebarItem type="image" icon={<ImageIcon size={20} />} label="Image" />
-            </div>
+        <div className="w-full h-full flex flex-col bg-background">
+            <AIGenerator />
 
-            <div className="mt-8">
-                <h2 className="font-semibold text-lg mb-2">Templates</h2>
-                <div className="flex flex-col gap-2">
-                    <DraggableSidebarItem type="login-form" icon={<Layout size={20} />} label="Login Form" />
-                    <DraggableSidebarItem type="register-form" icon={<Layout size={20} />} label="Register Form" />
+            <div className="p-4 flex flex-col gap-4 overflow-y-auto flex-1">
+                <div>
+                    <h2 className="font-semibold text-lg mb-2">Components</h2>
+                    <div className="grid grid-cols-2 gap-2">
+                        <DraggableSidebarItem type="container" icon={<Layout size={20} />} label="Container" />
+                        <DraggableSidebarItem type="button" icon={<MousePointer2 size={20} />} label="Button" />
+                        <DraggableSidebarItem type="text" icon={<Type size={20} />} label="Text" />
+                        <DraggableSidebarItem type="input" icon={<Box size={20} />} label="Input" />
+                        <DraggableSidebarItem type="image" icon={<ImageIcon size={20} />} label="Image" />
+                    </div>
+                </div>
+
+                <div className="mt-4">
+                    <h2 className="font-semibold text-lg mb-2">Templates</h2>
+                    <div className="flex flex-col gap-2">
+                        <DraggableSidebarItem type="login-form" icon={<Layout size={20} />} label="Login Form" />
+                        <DraggableSidebarItem type="register-form" icon={<Layout size={20} />} label="Register Form" />
+                    </div>
                 </div>
             </div>
         </div>
