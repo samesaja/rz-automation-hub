@@ -22,7 +22,8 @@ import {
   Lock,
   HardDrive,
   Webhook,
-  ChevronDown
+  ChevronDown,
+  PenTool
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { pb } from '@/lib/pocketbase'
@@ -54,6 +55,7 @@ const menuItems: MenuItem[] = [
       { name: 'Webhooks', href: '/dashboard/data/webhooks', icon: Webhook },
     ]
   },
+  { name: 'Low-code No-code', href: '/dashboard/ui-builder', icon: PenTool },
   { name: 'API Playground', href: '/dashboard/api-playground', icon: Zap },
   { name: 'Workflows', href: '/dashboard/workflows', icon: Workflow },
   { name: 'AI Studio', href: '/dashboard/ai-studio', icon: Sparkles },

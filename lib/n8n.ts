@@ -113,7 +113,12 @@ export class N8nClient {
       )
       return response.data.data || []
     } catch (error: any) {
+      console.error('Failed to list workflows full error:', error)
       console.error('Failed to list workflows:', error.message)
+      if (axios.isAxiosError(error)) {
+        console.error('Status:', error.response?.status)
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2))
+      }
       return []
     }
   }
@@ -156,43 +161,72 @@ export class N8nClient {
    */
   async updateWorkflow(id: string, data: { name?: string; active?: boolean }): Promise<WorkflowResponse> {
     try {
-      // First fetch the existing workflow to get nodes and connections
-      const existing = await axios.get(
-        `${this.baseUrl}/api/v1/workflows/${id}`,
-        {
-          headers: {
-            'X-N8N-API-KEY': this.apiKey,
-          },
-          timeout: 10000,
-        }
-      )
+      let finalData: any = {}
 
-      const currentWorkflow = existing.data
-
-      // Merge updates
-      const updatedWorkflow = {
-        ...currentWorkflow,
-        name: data.name ?? currentWorkflow.name,
-        active: data.active ?? currentWorkflow.active,
+      // 1. Handle Status Change (activate/deactivate)
+      if (data.active !== undefined) {
+        const endpoint = data.active ? 'activate' : 'deactivate'
+        const response = await axios.post(
+          `${this.baseUrl}/api/v1/workflows/${id}/${endpoint}`,
+          {},
+          {
+            headers: {
+              'X-N8N-API-KEY': this.apiKey,
+            },
+            timeout: 10000,
+          }
+        )
+        finalData = response.data
       }
 
-      // n8n PUT requires the full object
-      const response = await axios.put(
-        `${this.baseUrl}/api/v1/workflows/${id}`,
-        updatedWorkflow,
-        {
-          headers: {
-            'X-N8N-API-KEY': this.apiKey,
-          },
-          timeout: 10000,
+      // 2. Handle Name Update (PUT)
+      if (data.name) {
+        // First fetch the existing workflow to get nodes and connections
+        const existing = await axios.get(
+          `${this.baseUrl}/api/v1/workflows/${id}`,
+          {
+            headers: {
+              'X-N8N-API-KEY': this.apiKey,
+            },
+            timeout: 10000,
+          }
+        )
+
+        const currentWorkflow = existing.data
+
+        // Construct payload with only allowed fields
+        // Exclude 'active' as it is read-only
+        const updatedWorkflow = {
+          name: data.name,
+          nodes: currentWorkflow.nodes,
+          connections: currentWorkflow.connections,
+          settings: currentWorkflow.settings,
+          tags: currentWorkflow.tags,
         }
-      )
+
+        const response = await axios.put(
+          `${this.baseUrl}/api/v1/workflows/${id}`,
+          updatedWorkflow,
+          {
+            headers: {
+              'X-N8N-API-KEY': this.apiKey,
+            },
+            timeout: 10000,
+          }
+        )
+        finalData = response.data
+      }
+
       return {
         success: true,
-        data: response.data,
+        data: finalData,
       }
     } catch (error: any) {
       console.error('Failed to update workflow:', error.message)
+      if (axios.isAxiosError(error)) {
+        console.error('Status:', error.response?.status)
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2))
+      }
       return {
         success: false,
         error: error.message || 'Failed to update workflow',

@@ -7,6 +7,12 @@ export async function POST(req: Request) {
         const body = await req.json()
         const { email, password } = body
 
+        console.log('Login attempt:', {
+            email,
+            passwordLength: password?.length,
+            pbUrl: process.env.NEXT_PUBLIC_POCKETBASE_URL
+        })
+
         // Initialize PocketBase server-side
         const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://34.50.111.177:8090')
 
