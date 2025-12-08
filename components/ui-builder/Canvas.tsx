@@ -14,7 +14,7 @@ export function Canvas() {
     const { components } = useBuilder();
 
     return (
-        <div className="flex-1 bg-muted/20 p-8 overflow-auto relative">
+        <div className="flex-1 bg-muted/20 p-4 overflow-auto relative">
             <div
                 ref={setNodeRef}
                 className="min-h-[800px] w-full bg-background border border-dashed border-border rounded-lg shadow-sm relative"

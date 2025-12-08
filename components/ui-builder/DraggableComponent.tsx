@@ -40,6 +40,35 @@ const ContainerComponent = ({ children, className }: { children: React.ReactNode
     </div>
 );
 
+const CardComponent = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <div className={cn("p-6 bg-card text-card-foreground rounded-xl border shadow-sm", className)}>
+        {children}
+    </div>
+);
+
+const HeadingComponent = ({ props }: { props: any }) => {
+    const Tag = (props.level || 'h2') as any;
+    return <Tag className={cn("font-bold tracking-tight", props.className)}>{props.text || "Heading"}</Tag>;
+};
+
+const LinkComponent = ({ props }: { props: any }) => (
+    <a href={props.href || "#"} className={cn("text-primary hover:underline", props.className)}>
+        {props.text || "Link"}
+    </a>
+);
+
+const IconComponent = ({ props }: { props: any }) => (
+    <div className={cn("flex items-center justify-center", props.className)}>
+        <span className="text-xs text-muted-foreground">Icon: {props.icon || "star"}</span>
+    </div>
+);
+
+const AvatarComponent = ({ props }: { props: any }) => (
+    <div className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", props.className)}>
+        <img className="aspect-square h-full w-full" src={props.src || "https://github.com/shadcn.png"} alt="Avatar" />
+    </div>
+);
+
 export function DraggableComponent({ component }: { component: ComponentData }) {
     const { selectComponent, selectedId, updateComponent } = useBuilder();
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -90,9 +119,19 @@ export function DraggableComponent({ component }: { component: ComponentData }) 
             case "image":
                 return <ImageComponent props={component.props} />;
             case "container":
-                return <ContainerComponent>{component.children?.map(child => <DraggableComponent key={child.id} component={child} />)}</ContainerComponent>;
+                return <ContainerComponent className={component.props.className}>{component.children?.map(child => <DraggableComponent key={child.id} component={child} />)}</ContainerComponent>;
+            case "card":
+                return <CardComponent className={component.props.className}>{component.children?.map(child => <DraggableComponent key={child.id} component={child} />)}</CardComponent>;
+            case "heading":
+                return <HeadingComponent props={component.props} />;
+            case "link":
+                return <LinkComponent props={component.props} />;
+            case "icon":
+                return <IconComponent props={component.props} />;
+            case "avatar":
+                return <AvatarComponent props={component.props} />;
             default:
-                return <div>Unknown component</div>;
+                return <div>Unknown component: {component.type}</div>;
         }
     };
 

@@ -19,17 +19,23 @@ export function AIGenerator() {
 You are a UI Builder AI. Your goal is to generate a JSON structure for a UI layout based on the user's description.
 The output MUST be a valid JSON array of ComponentData objects.
 Do NOT include markdown formatting (like \`\`\`json). Just return the raw JSON.
+Do NOT include comments in the JSON.
+Do NOT include trailing commas.
 
 ComponentData Structure:
 {
   "id": "string (use uuid)",
-  "type": "container" | "button" | "text" | "input" | "image",
+  "id": "string (use uuid)",
+  "type": "container" | "card" | "button" | "text" | "heading" | "input" | "image" | "link" | "icon" | "avatar",
   "props": {
     "className": "string (Tailwind CSS classes)",
-    "text": "string (for text component)",
+    "text": "string (for text/heading/link)",
+    "level": "h1" | "h2" | "h3" (for heading),
+    "href": "string (for link)",
+    "icon": "string (lucide icon name, e.g. 'home', 'user')",
     "label": "string (for button)",
     "placeholder": "string (for input)",
-    "src": "string (for image)",
+    "src": "string (for image/avatar)",
     "position": "relative" (ALWAYS use relative for children of containers)
   },
   "style": { "cssProperty": "value" },
@@ -42,6 +48,7 @@ Rules:
 3. Use "style" for specific overrides if needed, but prefer Tailwind.
 4. Ensure "position": "relative" is set in props for all components to ensure they stack correctly.
 5. Generate realistic content.
+6. Ensure the JSON is strictly valid.
 
 Example Output:
 [
@@ -73,10 +80,39 @@ Example Output:
             if (!response.ok) throw new Error(data.error || "Failed to generate");
 
             let jsonStr = data.response;
-            // Clean up if the AI wraps in markdown
-            jsonStr = jsonStr.replace(/```json/g, '').replace(/```/g, '').trim();
+            // Clean up if the AI wraps in markdown or adds extra text
+            jsonStr = jsonStr.replace(/```json/g, '').replace(/```/g, '');
+            // Attempt to find the first '[' and last ']' to extract just the array
+            const firstBracket = jsonStr.indexOf('[');
+            const lastBracket = jsonStr.lastIndexOf(']');
+            if (firstBracket !== -1 && lastBracket !== -1) {
+                jsonStr = jsonStr.substring(firstBracket, lastBracket + 1);
+            }
 
-            const components = JSON.parse(jsonStr);
+            jsonStr = jsonStr.trim();
+
+            let components;
+            try {
+                components = JSON.parse(jsonStr);
+            } catch (e) {
+                console.warn("Failed to parse JSON, attempting repair:", jsonStr);
+                // Simple repair: close open arrays/objects
+                let repairedJson = jsonStr;
+                const openBraces = (repairedJson.match(/{/g) || []).length;
+                const closeBraces = (repairedJson.match(/}/g) || []).length;
+                const openBrackets = (repairedJson.match(/\[/g) || []).length;
+                const closeBrackets = (repairedJson.match(/\]/g) || []).length;
+
+                for (let i = 0; i < openBraces - closeBraces; i++) repairedJson += "}";
+                for (let i = 0; i < openBrackets - closeBrackets; i++) repairedJson += "]";
+
+                try {
+                    components = JSON.parse(repairedJson);
+                } catch (e2) {
+                    console.error("Failed to parse repaired JSON:", repairedJson);
+                    throw new Error("AI generated invalid JSON. Please try again with a simpler request.");
+                }
+            }
 
             // Post-process to ensure UUIDs are unique if the AI reused them (unlikely but possible)
             // For now, we assume the AI does a decent job or we just accept it.

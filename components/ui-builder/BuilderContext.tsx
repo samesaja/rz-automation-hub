@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { UniqueIdentifier } from "@dnd-kit/core";
 
-export type ComponentType = "container" | "button" | "text" | "input" | "image";
+export type ComponentType = "container" | "button" | "text" | "input" | "image" | "card" | "heading" | "link" | "icon" | "avatar";
 
 export interface ComponentData {
     id: UniqueIdentifier;

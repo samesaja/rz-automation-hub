@@ -1,5 +1,6 @@
 import Sidebar from '@/components/sidebar'
 import Navbar from '@/components/navbar'
+import { MainWrapper } from '@/components/dashboard/MainWrapper'
 import { cookies } from 'next/headers'
 import PocketBase from 'pocketbase'
 
@@ -31,11 +32,9 @@ export default async function DashboardLayout({
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-7xl mx-auto h-full">
-            {children}
-          </div>
-        </main>
+        <MainWrapper>
+          {children}
+        </MainWrapper>
       </div>
     </div>
   )

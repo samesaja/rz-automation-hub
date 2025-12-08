@@ -127,7 +127,7 @@ function UIBuilderContent() {
 
     return (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <div className="flex flex-col h-[calc(100vh-4rem)]">
+            <div className="flex flex-col h-full">
                 <div className="h-14 border-b bg-background flex items-center justify-between px-4">
                     <div className="flex items-center gap-2">
                         <input

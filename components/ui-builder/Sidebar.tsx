@@ -15,10 +15,15 @@ export function Sidebar() {
                     <h2 className="font-semibold text-lg mb-2">Components</h2>
                     <div className="grid grid-cols-2 gap-2">
                         <DraggableSidebarItem type="container" icon={<Layout size={20} />} label="Container" />
-                        <DraggableSidebarItem type="button" icon={<MousePointer2 size={20} />} label="Button" />
+                        <DraggableSidebarItem type="card" icon={<Layout size={20} />} label="Card" />
+                        <DraggableSidebarItem type="heading" icon={<Type size={20} />} label="Heading" />
                         <DraggableSidebarItem type="text" icon={<Type size={20} />} label="Text" />
+                        <DraggableSidebarItem type="button" icon={<MousePointer2 size={20} />} label="Button" />
                         <DraggableSidebarItem type="input" icon={<Box size={20} />} label="Input" />
                         <DraggableSidebarItem type="image" icon={<ImageIcon size={20} />} label="Image" />
+                        <DraggableSidebarItem type="link" icon={<Type size={20} />} label="Link" />
+                        <DraggableSidebarItem type="icon" icon={<Box size={20} />} label="Icon" />
+                        <DraggableSidebarItem type="avatar" icon={<ImageIcon size={20} />} label="Avatar" />
                     </div>
                 </div>
 
