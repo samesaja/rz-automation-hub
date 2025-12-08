@@ -1,21 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { n8nClient } from '@/lib/n8n'
-import PocketBase from 'pocketbase'
+import { getDb } from '@/lib/mongodb'
 
 export async function GET(request: NextRequest) {
   try {
     // 1. Fetch n8n executions
     const executionsPromise = n8nClient.listExecutions(50)
 
-    // 2. Fetch App API logs from PocketBase
-    const pb = new PocketBase('http://34.50.111.177:8090')
-    const pbLogsPromise = pb.collection('logs').getList(1, 50, {
-      sort: '-created',
-    })
+    // 2. Fetch App API logs from MongoDB
+    const dbPromise = getDb().then(db =>
+      db.collection('app_logs')
+        .find({})
+        .sort({ created: -1 })
+        .limit(50)
+        .toArray()
+    )
 
-    const [executions, pbLogsResult] = await Promise.all([
+    const [executions, appLogsDocs] = await Promise.all([
       executionsPromise,
-      pbLogsPromise.catch(() => ({ items: [] })) // Handle PB failure gracefully
+      dbPromise.catch(() => [])
     ])
 
     // Map n8n logs
@@ -41,10 +44,10 @@ export async function GET(request: NextRequest) {
     })
 
     // Map App logs
-    const appLogs = pbLogsResult.items.map((log: any) => ({
-      id: log.id,
+    const appLogs = appLogsDocs.map((log: any) => ({
+      id: log._id.toString(),
       timestamp: log.created,
-      workflow: log.workflow, // This field stores the API Endpoint name
+      workflow: log.workflow,
       status: log.status,
       duration: log.duration,
       message: log.message,

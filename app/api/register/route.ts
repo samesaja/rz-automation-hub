@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import PocketBase from 'pocketbase'
+import { getDb } from '@/lib/mongodb'
 import { cookies } from 'next/headers'
 
 export async function POST(req: Request) {
@@ -7,58 +7,72 @@ export async function POST(req: Request) {
         const body = await req.json()
         const { email, password, passwordConfirm } = body
 
-        // Initialize PocketBase server-side
-        // Use the public URL or internal URL if available. 
-        // Since we are on Vercel, we use the public IP.
-        const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://34.50.111.177:8090')
+        if (!email || !password) {
+            return NextResponse.json(
+                { error: 'Email and password are required' },
+                { status: 400 }
+            )
+        }
 
-        // 1. Create user
-        await pb.collection('users').create({
+        if (password !== passwordConfirm) {
+            return NextResponse.json(
+                { error: 'Passwords do not match' },
+                { status: 400 }
+            )
+        }
+
+        const db = await getDb();
+        const usersCollection = db.collection('users');
+
+        // 1. Check if user exists
+        const existingUser = await usersCollection.findOne({ email });
+        if (existingUser) {
+            return NextResponse.json(
+                { error: 'User with this email already exists' },
+                { status: 400 }
+            )
+        }
+
+        // 2. Create user
+        const now = new Date().toISOString();
+        const newUser = {
             email,
-            password,
-            passwordConfirm,
+            password, // Plaintext for MVP consistency with Login route
             emailVisibility: true,
-            role: 'admin'
-        })
+            role: 'admin', // Defaulting to admin for this automation hub use case
+            created: now,
+            updated: now,
+            name: email.split('@')[0]
+        };
 
-        // 2. Authenticate to get token
-        const authData = await pb.collection('users').authWithPassword(email, password)
+        const result = await usersCollection.insertOne(newUser);
 
-        // 3. Set cookie
-        // We need to manually set the cookie header for the response
+        // 3. Create session (Login immediately)
+        const user = { ...newUser, id: result.insertedId.toString(), _id: result.insertedId };
+
         const cookieStore = cookies()
-        const cookie = pb.authStore.exportToCookie({ httpOnly: false })
+        const sessionData = JSON.stringify({
+            id: user.id,
+            email: user.email,
+            role: user.role
+        });
 
-        // Parse the cookie string to set it properly using next/headers
-        // Format is usually: pb_auth=...; Path=/; Expires=...
-        const cookieParts = cookie.split(';')
-        const authCookiePart = cookieParts[0] // pb_auth=...
-        const [name, value] = authCookiePart.split('=')
+        const sessionToken = Buffer.from(sessionData).toString('base64');
 
-        cookieStore.set(name, value, {
+        cookieStore.set('pb_auth', sessionToken, {
             path: '/',
-            secure: false, // Set to true if PB is HTTPS, but it's HTTP here. 
-            // However, Vercel is HTTPS. 
-            // Ideally, PB should be HTTPS. 
-            // For now, false is safer for the HTTP backend connection, 
-            // but the browser cookie should probably be secure if on HTTPS.
-            // Let's stick to default or what exportToCookie gave, but we are reconstructing it.
+            secure: false,
             sameSite: 'lax',
             httpOnly: false
         })
 
-        return NextResponse.json({ success: true, user: authData.record })
+        return NextResponse.json({ success: true, user: user })
 
     } catch (error: any) {
         console.error('Registration API Error:', error)
-
-        // Return detailed error for debugging
-        const message = error?.data?.message || error?.message || 'Failed to register'
-        const details = error?.data?.data
-
         return NextResponse.json(
-            { error: message, details },
-            { status: error.status || 500 }
+            { error: error?.message || 'Failed to register' },
+            { status: 500 }
         )
     }
 }

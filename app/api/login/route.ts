@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import PocketBase from 'pocketbase'
+import { getDb } from '@/lib/mongodb'
 import { cookies } from 'next/headers'
 
 export async function POST(req: Request) {
@@ -7,45 +7,69 @@ export async function POST(req: Request) {
         const body = await req.json()
         const { email, password } = body
 
-        console.log('Login attempt:', {
-            email,
-            passwordLength: password?.length,
-            pbUrl: process.env.NEXT_PUBLIC_POCKETBASE_URL
-        })
+        console.log('Login attempt (MongoDB):', { email })
 
-        // Initialize PocketBase server-side
-        const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://34.50.111.177:8090')
+        const db = await getDb();
+        const usersCollection = db.collection('users');
 
-        // Authenticate
-        const authData = await pb.collection('users').authWithPassword(email, password)
+        // Check if ANY users exist. If not, create default admin.
+        const userCount = await usersCollection.countDocuments();
+        if (userCount === 0) {
+            console.log('No users found. Creating default admin.');
+            await usersCollection.insertOne({
+                email: 'admin@example.com',
+                password: 'password123', // In real app, HASH THIS!
+                role: 'admin',
+                name: 'System Admin',
+                created: new Date().toISOString()
+            });
+            // If the user is trying to login as admin/password123, let them proceed strictly after creation
+        }
 
-        // Set cookie
+        const user = await usersCollection.findOne({ email });
+
+        if (!user || user.password !== password) { // Simple plaintext check for MVP migration
+            return NextResponse.json(
+                { error: 'Invalid email or password' },
+                { status: 401 }
+            )
+        }
+
+        // Create simple session cookie
         const cookieStore = cookies()
-        const cookie = pb.authStore.exportToCookie({ httpOnly: false })
+        // Simple JSON session for now
+        const sessionData = JSON.stringify({
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role
+        });
 
-        // Parse and set cookie
-        const cookieParts = cookie.split(';')
-        const authCookiePart = cookieParts[0] // pb_auth=...
-        const name = 'pb_auth'
-        const value = authCookiePart.substring(name.length + 1)
+        // Encode in base64 to avoid special char issues in cookie
+        const sessionToken = Buffer.from(sessionData).toString('base64');
 
-        cookieStore.set(name, value, {
+        cookieStore.set('pb_auth', sessionToken, { // Keeping 'pb_auth' name for frontend compatibility if possible, or 'auth_token'
             path: '/',
-            secure: false, // See note in register route about HTTP/HTTPS
+            secure: false,
             sameSite: 'lax',
             httpOnly: false
         })
 
-        return NextResponse.json({ success: true, user: authData.record })
+        return NextResponse.json({
+            success: true,
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name,
+                role: user.role
+            },
+            token: sessionToken
+        })
 
     } catch (error: any) {
         console.error('Login API Error:', error)
-
-        const message = error?.data?.message || error?.message || 'Invalid email or password'
-
         return NextResponse.json(
-            { error: message },
-            { status: error.status || 401 }
+            { error: error?.message || 'Login failed' },
+            { status: 500 }
         )
     }
 }

@@ -41,22 +41,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Users', href: '/dashboard/users', icon: Users, adminOnly: true },
-  {
-    name: 'Data Platform',
-    icon: Database,
-    children: [
-      { name: 'Schemas', href: '/dashboard/data/schemas', icon: TableProperties },
-      { name: 'Data Browser', href: '/dashboard/data/browser', icon: Table },
-      { name: 'Realtime Monitor', href: '/dashboard/data/monitor', icon: Activity },
-      { name: 'Access Control', href: '/dashboard/data/access', icon: Shield },
-      { name: 'Database', href: '/dashboard/data/database', icon: Database },
-      { name: 'Collections', href: '/dashboard/data/collections', icon: Folder },
-      { name: 'Records', href: '/dashboard/data/records', icon: FileText },
-      { name: 'Auth', href: '/dashboard/data/auth', icon: Lock },
-      { name: 'Storage', href: '/dashboard/data/storage', icon: HardDrive },
-      { name: 'Webhooks', href: '/dashboard/data/webhooks', icon: Webhook },
-    ]
-  },
+  { name: 'Data Platform', href: '/dashboard/data/records', icon: Database },
   { name: 'Low-code No-code', href: '/dashboard/ui-builder', icon: PenTool },
   { name: 'API Playground', href: '/dashboard/api-playground', icon: Zap },
   { name: 'Workflows', href: '/dashboard/workflows', icon: Workflow },

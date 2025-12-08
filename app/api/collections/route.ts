@@ -1,45 +1,67 @@
 import { NextResponse } from 'next/server'
-import { getAdminPb } from '@/lib/pocketbase-admin'
+import { getDb } from '@/lib/mongodb'
+
+const DEFAULT_SCHEMAS = [
+    {
+        id: 'users_col',
+        name: 'users',
+        type: 'auth',
+        system: true,
+        schema: [
+            { name: 'name', type: 'text', required: false },
+            { name: 'avatar', type: 'file', required: false },
+            { name: 'role', type: 'text', required: true }
+        ],
+        listRule: 'id = @request.auth.id',
+        viewRule: 'id = @request.auth.id',
+        createRule: '',
+        updateRule: 'id = @request.auth.id',
+        deleteRule: 'id = @request.auth.id'
+    },
+    {
+        id: 'logs_col',
+        name: 'app_logs',
+        type: 'base',
+        system: false,
+        schema: [
+            { name: 'level', type: 'text', required: true },
+            { name: 'message', type: 'text', required: true },
+            { name: 'details', type: 'json', required: false },
+            { name: 'timestamp', type: 'date', required: true }
+        ],
+        listRule: null, // Admin only
+        viewRule: null,
+        createRule: null,
+        updateRule: null,
+        deleteRule: null
+    }
+];
 
 export async function GET() {
     try {
-        const pb = await getAdminPb()
+        const db = await getDb();
+        const metaCollection = db.collection('_schema_metadata');
 
-        // Use raw fetch to bypass SDK clock skew/header issues
-        // We know the token is valid because we just got it via raw fetch in getAdminPb
-        const token = pb.authStore.token.trim()
+        let collections = await metaCollection.find({}).toArray();
 
-        const response = await fetch('http://34.50.111.177:8090/api/collections?sort=name', {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            cache: 'no-store'
-        })
-
-        if (!response.ok) {
-            const errorText = await response.text()
-            console.error('Raw fetch failed:', response.status, errorText)
-            throw new Error(`Failed to fetch collections: ${response.status} ${errorText}`)
+        if (collections.length === 0) {
+            console.log('No metadata found. Seeding default schemas.');
+            await metaCollection.insertMany(DEFAULT_SCHEMAS);
+            collections = await metaCollection.find({}).toArray();
         }
 
-        const result = await response.json()
-        // The raw API returns items directly or a paginated list. 
-        // pb.collections.getFullList returns an array.
-        // The curl output showed "items": [...], so we need to return result.items if it exists.
-        const collections = result.items || result
+        // Must map _id to id if necessary, though our seed uses 'id'. 
+        // MongoDB returns _id object usually.
+        const serialized = collections.map(c => ({
+            ...c,
+            id: c.id || c._id.toString(),
+            _id: undefined // Remove Mongo ID to clean up response matching PB format
+        }));
 
-        return NextResponse.json(collections)
+        return NextResponse.json(serialized)
+
     } catch (error: any) {
-        // Handle 401/403 errors gracefully without spamming console trace
-        if (error.status === 401 || error.status === 403) {
-            console.warn(`Access denied to collections: ${error.message}`)
-            return NextResponse.json(
-                { error: 'Access denied: You do not have permission to view collections.' },
-                { status: 403 }
-            )
-        }
-
-        console.error('Failed to fetch collections:', error)
+        console.error('Failed to fetch collections (MongoDB):', error)
         return NextResponse.json(
             { error: error.message || 'Failed to fetch collections' },
             { status: 500 }

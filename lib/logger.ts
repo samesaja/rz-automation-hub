@@ -1,4 +1,4 @@
-import { getAdminPb } from './pocketbase-admin'
+import { getDb } from './mongodb'
 
 export async function logActivity(
     workflow: string,
@@ -7,16 +7,19 @@ export async function logActivity(
     duration: number
 ) {
     try {
-        const pb = await getAdminPb()
+        const db = await getDb()
+        const now = new Date().toISOString()
 
-        await pb.collection('app_logs').create({
+        await db.collection('app_logs').insertOne({
             workflow,
             status,
             message,
             duration,
+            created: now,
+            updated: now
         })
     } catch (error) {
-        console.error('Failed to log activity:', error)
+        console.error('Failed to log activity (MongoDB):', error)
         // Don't throw, logging failure shouldn't break the app
     }
 }
